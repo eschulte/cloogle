@@ -31,9 +31,11 @@
 
 (defun can (test) ;;  &optional package external-only <- like apropos
   "Return a form which can replace `?' in TEST."
-  (remove-if-not (lambda (func-spec)
-                   (ignore-errors (eval (replace-sym test (car func-spec)))))
-                 *funcs-w-types*))
+  (remove-if-not
+   (lambda (func-spec)
+     (ignore-errors (eval (replace-sym test (car func-spec)))))
+   (remove-if-not [{equal (length (car (calls test)))} #'length #'third]
+                  *funcs-w-types*)))
 
 (defun replace-sym (form with)
   (cond ((consp form) (cons (replace-sym (car form) with)
