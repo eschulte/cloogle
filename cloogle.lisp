@@ -13,7 +13,14 @@
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (enable-curry-compose-reader-macros))
 
-(defun can (test)
+(defvar *funcs-w-types*
+  (let (all)
+    (do-symbols (sym)
+      (ignore-errors (push (cons sym (sb-impl::%fun-type (symbol-function sym)))
+                           all)))
+    all))
+
+(defun can (test) ;;  &optional package external-only <- like apropos
   "Return a form which can replace `?' in TEST."
   (remove-if-not [#'eval {replace-sym test}] *funcs*))
 
@@ -31,3 +38,7 @@
                    (mapc #'collect (cdr form))))))
     (collect form)
     calls))
+
+;; typep
+
+;; subtypep
