@@ -25,17 +25,28 @@
 (defvar *funcs-w-types*
   (let (all)
     (do-symbols (sym)
-      (ignore-errors (push (cons sym (sb-impl::%fun-type (symbol-function sym)))
-                           all)))
+      (ignore-errors
+        (push (cons sym (cdr (sb-impl::%fun-type (symbol-function sym))))
+              all)))
     (remove-if {intersection *bad-funcs*} all)))
 
 (defun can (test) ;;  &optional package external-only <- like apropos
   "Return a form which can replace `?' in TEST."
-  (remove-if-not
-   (lambda (func-spec)
-     (ignore-errors (eval (replace-sym test (car func-spec)))))
-   (remove-if-not [{equal (length (car (calls test)))} #'length #'third]
-                  *funcs-w-types*)))
+  (let ((calls (calls test)))
+    (remove-if-not
+     (lambda (func-spec)
+       (ignore-errors (eval (replace-sym test (car func-spec)))))
+     ;; filter by type
+     (remove-if-not [{every _ calls} {curry match-ftype} #'second]
+      ;; filter by arity
+      (remove-if-not [{equal (length (car calls))} #'length #'second]
+                     *funcs-w-types*)))))
+
+(defun match-ftype (ftype call)
+  (mapcar (lambda (type instance)
+            ;; return true if type is &rest or &key or if types match
+            )
+          ftype call))
 
 (defun replace-sym (form with)
   (cond ((consp form) (cons (replace-sym (car form) with)
