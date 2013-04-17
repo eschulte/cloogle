@@ -2,7 +2,7 @@
   :description "unit test based function recommendation"
   :version "0.0.0"
   :licence "GPL V3"
-  :depends-on (alexandria metabang-bind curry-compose-reader-macros)
+  :depends-on (alexandria curry-compose-reader-macros)
   :components
   ((:static-file "COPYING")
    (:file "package")
