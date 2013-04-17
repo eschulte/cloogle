@@ -8,6 +8,9 @@ each of them replacing `?`, and returns those which succeed.
 how to install
 --------------
 
+Note: this uses a couple [SBCL](http://www.sbcl.org)-specific
+functions, so it won't work with another lisp.
+
 1. Install [Quicklisp](http://www.quicklisp.org/beta/) if you're not
    already using it for you lisp package management.
 
