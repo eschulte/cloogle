@@ -13,7 +13,7 @@
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (enable-curry-compose-reader-macros))
 
-(defvar *bad-funcs* '(loop inspect gaussian-random)
+(defvar *bad-funcs* '(loop inspect gaussian-random break)
   "Functions which we don't want to try.")
 
 (defvar *funcs-w-types*
