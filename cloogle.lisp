@@ -8,12 +8,6 @@
 
 ;; A shameless mimic of what George Stelle is doing in haskell.
 
-;; Actually, this is stupider because it doesn't filter by types.  It
-;; does collect information on both the argument and value types of
-;; all functions for future use.  When we get there we should first
-;; ensure the number of arguments match, then ensure types of
-;; arguments match (see `typep' and `subtypep').
-
 ;;; Code:
 (in-package :cloogle)
 (eval-when (:compile-toplevel :load-toplevel :execute)
@@ -35,18 +29,22 @@
   (let ((calls (calls test)))
     (remove-if-not
      (lambda (func-spec)
-       (ignore-errors (eval (replace-sym test (car func-spec)))))
+       (ignore-errors
+         (let ((*error-output* (make-broadcast-stream)))
+           (eval (replace-sym test (car func-spec))))))
      ;; filter by type
-     (remove-if-not [{every _ calls} {curry match-ftype} #'second]
+     (remove-if-not [{every _ calls} {curry #'match-ftype} #'second]
       ;; filter by arity
       (remove-if-not [{equal (length (car calls))} #'length #'second]
                      *funcs-w-types*)))))
 
 (defun match-ftype (ftype call)
-  (mapcar (lambda (type instance)
-            ;; return true if type is &rest or &key or if types match
-            )
-          ftype call))
+  (every (lambda (type instance)
+           ;; return true if type is &rest or &key or if types match
+           (case type
+             ((&rest &key &optional) (return-from match-ftype t))
+             (t (typep instance type))))
+         ftype call))
 
 (defun replace-sym (form with)
   (cond ((consp form) (cons (replace-sym (car form) with)
