@@ -16,13 +16,18 @@
 (defvar *bad-funcs* '(loop inspect gaussian-random break)
   "Functions which we don't want to try.")
 
-(defvar *funcs-w-types*
-  (let (all)
-    (do-symbols (sym)
-      (ignore-errors
-        (push (cons sym (cdr (sb-impl::%fun-type (symbol-function sym))))
-              all)))
-    (remove-if {intersection *bad-funcs*} all)))
+(defvar *funcs-w-types* nil
+  "Functions in scope, use `refresh' to update this list.")
+
+(defun refresh ()
+  (setf *funcs-w-types*
+        (let (all)
+          (do-symbols (sym)
+            (ignore-errors
+              (push (cons sym (cdr (sb-impl::%fun-type (symbol-function sym))))
+                    all)))
+          (remove-if {intersection *bad-funcs*} all))))
+(refresh)
 
 (defun can (test) ;;  &optional package external-only <- like apropos
   "Return a form which can replace `?' in TEST."
