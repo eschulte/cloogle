@@ -9,9 +9,12 @@
 ;; A shameless mimic of what George Stelle is doing in haskell.
 
 ;;; Code:
+(defpackage #:cloogle
+  (:nicknames :cloogle/cloogle)
+  (:use :common-lisp :alexandria :named-readtables :curry-compose-reader-macros)
+  (:export :can :? :*bad-funcs* :*funcs-w-types* :refresh))
 (in-package :cloogle)
-(eval-when (:compile-toplevel :load-toplevel :execute)
-  (enable-curry-compose-reader-macros))
+(in-readtable :curry-compose-reader-macros)
 
 (defvar *bad-funcs* '(loop inspect gaussian-random break)
   "Functions which we don't want to try.")
